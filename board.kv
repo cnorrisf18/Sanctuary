@@ -1,0 +1,16 @@
+#:kivy 1.11.1
+
+<BoardGame>:
+    bcolor: 0,0,255,.8
+    canvas.before:
+        Color:
+            rgba: self.bcolor
+        Rectangle:
+            pos: self.pos
+            size: self.size
+    Label:
+        font_size: 70
+        center_x: root.width/2
+        top: root.top - 200
+        text: "This is a board"
+

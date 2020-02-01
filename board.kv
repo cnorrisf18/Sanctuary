@@ -8,9 +8,19 @@
         Rectangle:
             pos: self.pos
             size: self.size
-    Label:
-        font_size: 70
-        center_x: root.width/2
-        top: root.top - 200
-        text: "This is a board"
 
+
+<RootWidget>
+    AnchorLayout:
+        AsyncImage:
+            source: "farm.jpg"
+            anchor_x = left
+            anchor_y = center
+        AsyncImage:
+            source: "farm.jpg"
+            anchor_x = right
+            anchor_y = center
+        AsyncImage:
+            source: "farm.jpg"
+            size_hint: .4,.4
+            pos: 150,150

@@ -14,8 +14,6 @@ try:
     from kivy.app import App
     from kivy.uix.behaviors import ButtonBehavior
     from kivy.uix.screenmanager import Screen
-
-
 except ImportError as err:
     print("couldn't load module. %sys" % err)
     sys.exit(2)
@@ -39,7 +37,7 @@ def load_png(name):
 
 class SetUp(BoxLayout, Screen):
     def __init__(self, **kwargs):
-        super(SetUp, self).__init__(**kwargs)
+        super(BoxLayout, self).__init__(**kwargs)
         self.font_size = 50
         self.orientation = "vertical"
         self.buttons = []
@@ -58,7 +56,7 @@ class SetUp(BoxLayout, Screen):
 class Board(pygame.Surface):
     #The boards for the game, start with one per player
     def __init__(self, **kwargs):
-        super(Board, self).__init__(**kwargs, size =pygame.transform.scale(self,(250,250)))
+        super(Board, self).__init__(**kwargs, size = pygame.transform.scale(self,(250,250)))
         self.image = pygame.image.load('farm.jpg')
         self.size = pygame.transform.scale(self, (250,250))
 

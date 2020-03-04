@@ -12,7 +12,7 @@ from random import randint
 from kivy.config import Config
 from kivy.uix.screenmanager import Screen
 Config.set('graphics', 'resizable', 1)
-from classes import Feed, Animal, Board, GUI, MainApp
+from classes import Feed, Animal, Board
 
 def test_classes():
     feed = Feed()
@@ -45,4 +45,13 @@ def test_classes():
     print(testland.ambassadors)
 #test_classes()
 
-MainApp().run()
+with open('animals', 'r') as file:
+    lines = [line.strip().split(',') for line in file]
+    for animal in lines[1:]:
+        #find info
+        species = animal[0]
+        size = animal [1]
+        feed = animal [2]
+        inspiration = animal[3]
+        victorypoints = animal[4]
+        print(species, size, feed, inspiration, victorypoints)

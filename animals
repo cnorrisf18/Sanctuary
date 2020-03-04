@@ -1,0 +1,11 @@
+species,size,feed,inspiration,victory points
+cow,large,10,6,10
+horse,large,9,6,9
+pig,large,8,5,8
+goat,medium,7,5,7
+sheep,medium,6,4,6
+dog,medium,5,5,5
+cat,medium,4,3,4
+chicken,small,3,2,3
+duck,small,2,1,2
+rabbit,small,1,1,1

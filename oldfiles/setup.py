@@ -40,6 +40,7 @@ Builder.load_string("""
                 root.manager.current = '4'
                 print(4)
             
+<IntroScreen>:
 """)
 
 class MainScreen(Screen):

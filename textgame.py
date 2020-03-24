@@ -5,7 +5,7 @@ import random
 
 #mode = text/graphics
 
-def simpleSetup():
+def Setup():
     num = int(input('How many players?'))
     team = Players(num)
     for player in range(0,team.players):
@@ -13,7 +13,7 @@ def simpleSetup():
         name = input(f'Player {player}, what is your name?')
         team.add_names(name)
         possible_animals = []
-        with open('animals','r') as afile:
+        with open('textfiles/animals','r') as afile:
             zespecies = [line.strip().split(',') for line in afile]
             possible_animals = [an[0] for an in zespecies]
         added_an_animal = False
@@ -39,7 +39,7 @@ def simpleSetup():
 
 
 
-def simpleRejuv(team):
+def Rejuv(team):
     [board.reset() for board in team.boardlist]
     team.earn_money((10 * team.players) + team.supporters)
     print(f'Earned ${10 * team.players} from savings and ${team.supporters} from supporters')
@@ -96,7 +96,7 @@ def actionOrganizeFundraiser(team):
     team.gain_inspiration(insp)
     print(f'You earned ${d20} and got {insp} inspiration.')
 
-def simpleAction(team, thirdact):
+def Action(team, thirdact):
     if thirdact:
         num_actions = 1
         print('Someone is performing a third action, and the team will lose 10 inspiration at the end of the round!')
@@ -132,10 +132,10 @@ def simpleAction(team, thirdact):
             thirdaction = input(f'{name}, would you like to perform a third action? WARNING: this will cause you to become'
                                 f' overworked! Enter yes or no. ').lower()
             if thirdaction == 'yes' or thirdaction == 'y':
-                simpleAction(team, thirdact = True)
+                Action(team, thirdact = True)
 
 
-def simpleResolution(team):
+def Resolution(team):
     team.lose_inspiration(team.overworked * 10)
     if team.employees != 0:
         team.pay_employees()
@@ -153,20 +153,20 @@ def simpleResolution(team):
 
 def main():
     roundnum = 1
-    team = simpleSetup()
+    team = Setup()
     gameended = False
     while not gameended:
-        feedfail = simpleAction(team, thirdact=False)
+        feedfail = Action(team, thirdact=False)
         if feedfail:
             gameended = True
             print('Could not feed an animal, game ending')
             break
-        upfail = simpleResolution(team)
+        upfail = Resolution(team)
         if upfail:
             gameended = True
             print('Did not feed all of the animals, game ending')
             break
-        simpleRejuv(team)
+        Rejuv(team)
         print(f'Round {roundnum} ended, moving onto next round. You have ${team.total_money} dollars and {team.feed} feed.')
         roundnum = roundnum + 1
         if roundnum >= 22:

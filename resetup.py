@@ -24,12 +24,15 @@ from kivy.uix.floatlayout import FloatLayout
 
 class GameApp(App):
     def board_screen(self, count, scre, playernames, animals, *largs):
-        gui = GUI(name = str(count), pnum = int(count))
+        print('ready to set up the game')
+        #print(animals)
+        gui = GUI(name = str(count), pnum = int(count), root = scre)
         with gui.canvas:
-            btn_bts = Button(text = 'Back to Player Selection', on_press = partial(self.set_current_screen, scre, 'settings'),
+            btn_bts = Button(text = 'Back to Player Selection', on_press = partial(self.setup_setup_screen, scre),
                             size_hint = (.2,.1), pos_hint = {"top":1,"left":1})
             gui.add_widget(btn_bts)
-        players = Players(count, playernames)
+        #print(gui.boardlist)
+        players = Players(count, playernames, scre, gui.boardlist)
         players.add_starting_animals(animals)
         scre.add_widget(gui)
         self.set_current_screen(scre, gui.name)
@@ -54,49 +57,62 @@ class GameApp(App):
         settings_screen.add_widget(layout)
         root.add_widget(settings_screen)
 
-    def setup_screen(self, root, *largs):
+    def setup_setup_screen(self, *largs):
+        root = ScreenManager()
         name_list = []
         animal_list = []
-        i = 1
-        while i !=5:
-            layout = BoxLayout(orientation = 'vertical')
-            welcome_label = Label(text = f'Welcome to Sanctuary, Player {i}!')
-            name = TextInput(multiline = False, padding_x = 695, padding_y = 60,
-                             hint_text = 'Enter your name', font_size = 20, background_color = (0, 128, 129, 1))
-            name_list.append(name.text)
-            animallist = ['Cow','Horse','Pig','Sheep','Goat','Dog','Cat','Chicken','Duck','Rabbit']
-            dropdown = DropDown()
-            for index in range(10):
-                btn = Button(text=animallist[index], size_hint_y=None, height=44)
-                btn.bind(on_release=lambda btn: dropdown.select(btn.text))
-                dropdown.add_widget(btn)
-            abutton = Button(text = 'Click to pick your starting animal')
-            abutton.bind(on_release=dropdown.open)
-            dropdown.bind(on_release=lambda instance, x: setattr(abutton, 'text', x))
-            aname = TextInput(multiline = False, padding_x = 680, padding_y = 60,
-                              hint_text = f"Enter animal name", font_size = 20, background_color = (200, 0, 200, 1))
-            animal_list.append(Animal(aname.text, abutton.text, True))
-            movebtn = Button(text = 'Set up the next player')
-            movebtn.bind(on_release = partial(self.set_current_screen, root, f'setup{i + 1}'))
-            endbtn = Button(text = 'Finished setting up, go to the game!')
-            endbtn.bind(on_release = partial(self.board_screen, i, root, name_list, animal_list))
-            layout.add_widget(welcome_label)
-            layout.add_widget(name)
-            layout.add_widget(abutton)
-            layout.add_widget(aname)
-            layout.add_widget(movebtn)
-            layout.add_widget(endbtn)
-            if i == 4:
-                layout.remove_widget(movebtn)
-            setup_screen = Screen(name = f'setup{i}')
-            setup_screen.add_widget(layout)
-            root.add_widget(setup_screen)
-            i += 1
+        for i in range(1,5):
+            name_list, animal_list = self.setup_screen(root, i, name_list, animal_list)
+        return root
+    def setup_screen(self, root, i, name_list, animal_list, *largs):
+        animallist = ['Cow', 'Horse', 'Pig', 'Sheep', 'Goat', 'Dog', 'Cat', 'Chicken', 'Duck', 'Rabbit']
+        layout = BoxLayout(orientation = 'vertical')
+        layout.name = i
+        welcome_label = Label(text = f'Welcome to Sanctuary, Player {i}!')
+        name = TextInput(multiline = False, padding_x = 695, padding_y = 50,
+                         hint_text = 'Enter your name', font_size = 20, background_color = (0, 128, 129, 1))
+        name_list.append(name.text)
+        dropdown = DropDown()
+        for index in range(10):
+            btn = Button(text=animallist[index], size_hint_y=None, height=44)
+            btn.bind(on_release=lambda btn: dropdown.select(btn.text))
+            #btn.bind(on_release= )
+            dropdown.add_widget(btn)
+        abutton = Button(text='Click to pick your starting animal')
+        dropdown.bind(on_select=lambda instance, x: setattr(abutton, 'text', x))
+        abutton.bind(on_release=dropdown.open)
+        #abutton.bind(on_release = lambda instance: print(abutton.text))
+        aname = TextInput(multiline = False, padding_x = 680, padding_y = 50,
+                          hint_text = f"Enter animal name", font_size = 20, background_color = (200, 0, 200, 1))
+        #add_animal_btn = Button(text = 'Add your animal')
+        #add_animal_btn.bind(on_release = lambda instance: animal_list.append(Animal(aname.text, abutton.text, True)))
+        #animal_list.append(Animal(aname.text, abutton.text, True))
+        movebtn = Button(text = 'Set up the next player')
+        movebtn.bind(on_press = lambda instance: animal_list.append(Animal(aname.text, abutton.text, True)))
+        movebtn.bind(on_release = partial(self.set_current_screen, root, f'setup{i + 1}'))
+        endbtn = Button(text = 'Finished setting up, go to the game!')
+        endbtn.bind(on_press = lambda instance: animal_list.append(Animal(aname.text, abutton.text, True)))
+        endbtn.bind(on_release = partial(self.board_screen, i, root, name_list, animal_list))
+        layout.add_widget(welcome_label)
+        layout.add_widget(name)
+        layout.add_widget(abutton)
+        layout.add_widget(aname)
+       # layout.add_widget(add_animal_btn)
+        layout.add_widget(movebtn)
+        layout.add_widget(endbtn)
+        if i == 4:
+            layout.remove_widget(movebtn)
+        setup_screen = Screen(name = f'setup{i}')
+        setup_screen.add_widget(layout)
+        root.add_widget(setup_screen)
+        return name_list, animal_list
+
     def build(self):
-        root = ScreenManager()
-        self.setup_screen(root)
+        root = self.setup_setup_screen()
         return root
 
 
 if __name__ == '__main__':
     GameApp().run()
+
+

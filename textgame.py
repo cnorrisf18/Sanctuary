@@ -7,7 +7,7 @@ import random
 
 def Setup():
     num = int(input('How many players?'))
-    team = Players(num)
+    team = Players(num, [])
     for player in range(0,team.players):
         team.earn_money(10)
         name = input(f'Player {player}, what is your name?')

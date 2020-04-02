@@ -23,13 +23,21 @@ class GraphicsDrawer(Widget):
     # this will be used to draw everything
     def __init__(self, imageStr = "None",**kwargs):
         super().__init__(**kwargs)
+        print(f'imageStr for GRAPHICSDRAWER is {imageStr}')
         with self.canvas:
-            self.rect_bg = Rectangle(source=imageStr)
+            if imageStr == 'images/farm.jpg':
+                self.rect_bg = Button(background_normal = imageStr)
+                self.rect_bg.bind(on_release = self.callback)
+            else:
+                self.rect_bg = Rectangle(source=imageStr)
             self.rect_bg.pos = self.pos
             if imageStr == 'images/farm.jpg':
                 self.bind(pos=self.update_graphics_pos_board, size = self.update_graphics_size_board)
             else:
                 self.bind(pos=self.update_graphics_pos, size = self.update_graphics_size)
+
+    def callback(self, event):
+        print('hi')
 
     def update_graphics_pos_board(self, root, value):
         #xpos, ypos = 1000,1000
@@ -56,7 +64,7 @@ class GraphicsDrawer(Widget):
 
 class Board(GraphicsDrawer):
     # the board, containing all the animal houses it can
-    def __init__(self, imageStr='None', **kwargs):
+    def __init__(self, root, imageStr='None', **kwargs):
 
         self.small_animals = 0
         self.medium_animals = 0
@@ -65,6 +73,7 @@ class Board(GraphicsDrawer):
         self.max_animals = 20
         self.ambassadors = []
         self.hasbeenlabored = False
+        self.root = root
 
 
         super().__init__(imageStr = imageStr)
@@ -75,9 +84,11 @@ class Board(GraphicsDrawer):
 
 
     def add_animals(self, animals):
+        #print(animals)
         # animals should be a list of objects of the Animals class
         starting_total = self.total_animals
         for animal in animals:
+            self.add_widget(animal)
             if animal.asize == 'large':
                 self.max_animals = 5
                 self.large_animals += 1
@@ -94,17 +105,25 @@ class Board(GraphicsDrawer):
             if self.total_animals > self.max_animals:
                 self.total_animals = starting_total
                 raise ValueError('Could not perform operation; You are putting too many animals in one plot!')
-            self.draw_shelter(animal)
             self.ambassadors.append(animal)
+            self.draw_shelter(animal)
+
+
 
     def draw_shelter(self, animal):
         # this will draw a graphic on the screen that indicates the animal or the animal's shelter
-        if animal.asize == 'small':
-            animal.setSize(map(lambda x: x/20, self.size))
-        elif animal.asize == 'medium':
-            animal.setSize(map(lambda x: x/10, self.size))
-        elif animal.asize == 'large':
-            animal.setSize(map(lambda x: x/5, self.size))
+        for a in self.ambassadors:
+            if a == animal:
+                pos = self.ambassadors.index(a) + 1
+                if animal.asize == 'small':
+                    animal.setSize(self.height/3, self.height/3)
+                    animal.setPos(pos * self.center_x, pos * self.center_y)
+                elif animal.asize == 'medium':
+                    animal.setSize(self.height/2, self.height / 2)
+                    animal.setPos(pos * self.center_x, pos * self.center_y)
+                elif animal.asize == 'large':
+                    animal.setSize(self.height , self.height)
+                    animal.setPos(pos * self.center_x, pos * self.center_y)
 
     def labor(self, team, game):
         # food supply will be an object from the Feed class; it is a number representing the total amount of food available
@@ -138,8 +157,8 @@ class Animal(GraphicsDrawer):
         self.inspiration = 0
         self.imageStr = 'None'
         self.vp = 0
-        super().__init__(**kwargs)
-
+        self.calculate_stats()
+        super().__init__(self.imageStr, **kwargs)
     def __str__(self):
         return self.aname
 
@@ -154,6 +173,8 @@ class Animal(GraphicsDrawer):
                     self.inspiration = int(animal[3])
                     self.vp = int(animal[4])
                     self.imageStr = animal[5]
+                # else:
+                #     print(f'not a match, animal[0] is {animal[0]} while self.species.lower() is {self.species.lower()}')
         if self.special:
             self.vp = self.vp * 2
 
@@ -196,7 +217,7 @@ class Workforce(GraphicsDrawer):
         print(f'Recruited {total_recruits} volunteers in total')
 
 class Players(GraphicsDrawer):
-    def __init__(self, playernum, playernames, **kwargs):
+    def __init__(self, playernum, playernames, root, boardlist, **kwargs):
         self.players = int(playernum)
         self.playernames = playernames
         self.inspiration = 0
@@ -208,8 +229,8 @@ class Players(GraphicsDrawer):
         self.feed = 0
         self.overworked = 0
         self.total_sanctuary_animals = []
-        self.boardlist = [Board() for player in range(1,playernum+1)]
-        super().__init__(**kwargs)
+        self.boardlist = boardlist
+        super().__init__('players',**kwargs)
     def calculate_labor_for_upkeep(self):
         return self.players*2 + self.volunteers//5 + self.employees
     def calculate_labor_for_actions(self):
@@ -226,8 +247,11 @@ class Players(GraphicsDrawer):
         pos = 0
         if len(animallist) == self.players:
             for animal in animallist:
+                animal = [animal]
                 self.boardlist[pos].add_animals(animal)
                 pos += 1
+        else:
+            print(f'failed to work, len(animallist) is {len(animallist)} while self.players is {self.players}')
     def recruit_volunteers(self, numactions):
         total_recruits = 0
         for n in range(1, int(numactions) + 1):
@@ -314,21 +338,22 @@ class Players(GraphicsDrawer):
         self.total_sanctuary_animals.append(animal)
     def gain_land(self):
         self.spend_money(20)
-        self.boardlist.append(Board())
+        self.boardlist.append(Board(self.root))
 
 class GUI(Screen):
     #the main game class that things will be drawn onto
     _disabled_count = 0
-    def __init__(self, pnum, **kwargs):
+    def __init__(self, pnum, root, **kwargs):
         self.playernum = pnum
         self.boardlist = []
+        self.root = root
         super().__init__(**kwargs)
         #l = Label(text = 'Sanctuary', pos_hint = )
         self.add_boards()
     def add_boards(self):
         for i in range(1, self.playernum+1):
             #print(f'i for playernum is {i}')
-            board = Board(pos_hint= {1},imageStr='images/farm.jpg'  )
+            board = Board(pos_hint= {1},imageStr='images/farm.jpg', root = self.root)
             self.boardlist.append(board)
             self.add_widget(board)
             self.set_boards_pos()

@@ -25,16 +25,22 @@ from kivy.uix.floatlayout import FloatLayout
 class GameApp(App):
     def board_screen(self, count, scre, playernames, animals, *largs):
         print('ready to set up the game')
-        #print(animals)
+        for a in animals:
+            print(a.species)
+        print(scre.children)
         gui = GUI(name = str(count), pnum = int(count), root = scre)
+        scre.add_widget(gui)
+        print(scre.children)
+        players = Players(count, playernames, scre, gui.boardlist)
+        print(players.total_sanctuary_animals)
+        players.add_starting_animals(animals)
+        print(players.total_sanctuary_animals)
         with gui.canvas:
-            btn_bts = Button(text = 'Back to Player Selection', on_press = partial(self.setup_setup_screen, scre),
+            btn_bts = Button(text = 'Back to Player Selection', on_press = partial(self.reset, scre, players, animals),
                             size_hint = (.2,.1), pos_hint = {"top":1,"left":1})
             gui.add_widget(btn_bts)
         #print(gui.boardlist)
-        players = Players(count, playernames, scre, gui.boardlist)
-        players.add_starting_animals(animals)
-        scre.add_widget(gui)
+
         self.set_current_screen(scre, gui.name)
 
     def set_current_screen(self, screen, name_of_screen, *largs):
@@ -57,14 +63,32 @@ class GameApp(App):
         settings_screen.add_widget(layout)
         root.add_widget(settings_screen)
 
-    def setup_setup_screen(self, *largs):
-        root = ScreenManager()
+    def reset(self, scre, players, animals, *largs):
+        del animals
+        for wid in scre.children:
+            for ch in wid.children:
+                for a in ch.children:
+                    ch.remove_widget(a)
+                wid.remove_widget(ch)
+            scre.remove_widget(wid)
+        del players
+        self.build()
+
+
+    def setup_setup_screen(self, root,reset = False,*largs):
         name_list = []
         animal_list = []
         for i in range(1,5):
-            name_list, animal_list = self.setup_screen(root, i, name_list, animal_list)
+            if reset == True:
+                name_list, animal_list, reset = self.setup_screen(root, i, name_list, animal_list, reset = reset)
+            else:
+                name_list, animal_list, reset = self.setup_screen(root, i, name_list, animal_list)
         return root
-    def setup_screen(self, root, i, name_list, animal_list, *largs):
+    def setup_screen(self, root, i, name_list, animal_list, reset = False , *largs):
+        if reset == True:
+            animal_list = []
+            name_list = []
+            reset = False
         animallist = ['Cow', 'Horse', 'Pig', 'Sheep', 'Goat', 'Dog', 'Cat', 'Chicken', 'Duck', 'Rabbit']
         layout = BoxLayout(orientation = 'vertical')
         layout.name = i
@@ -105,10 +129,11 @@ class GameApp(App):
         setup_screen = Screen(name = f'setup{i}')
         setup_screen.add_widget(layout)
         root.add_widget(setup_screen)
-        return name_list, animal_list
+        return name_list, animal_list, reset
 
-    def build(self):
-        root = self.setup_setup_screen()
+    def build(self, *largs):
+        root = ScreenManager()
+        self.setup_setup_screen(root)
         return root
 
 

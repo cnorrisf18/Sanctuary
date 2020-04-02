@@ -25,11 +25,11 @@ class GraphicsDrawer(Widget):
         super().__init__(**kwargs)
         print(f'imageStr for GRAPHICSDRAWER is {imageStr}')
         with self.canvas:
-            if imageStr == 'images/farm.jpg':
-                self.rect_bg = Button(background_normal = imageStr)
-                self.rect_bg.bind(on_release = self.callback)
-            else:
-                self.rect_bg = Rectangle(source=imageStr)
+            # if imageStr == 'images/farm.jpg':
+            #     self.rect_bg = Button(background_normal = imageStr)
+            #     self.rect_bg.bind(on_release = self.callback)
+            # else:
+            self.rect_bg = Rectangle(source=imageStr)
             self.rect_bg.pos = self.pos
             if imageStr == 'images/farm.jpg':
                 self.bind(pos=self.update_graphics_pos_board, size = self.update_graphics_size_board)
@@ -247,6 +247,7 @@ class Players(GraphicsDrawer):
         pos = 0
         if len(animallist) == self.players:
             for animal in animallist:
+                self.total_sanctuary_animals.append(animal)
                 animal = [animal]
                 self.boardlist[pos].add_animals(animal)
                 pos += 1

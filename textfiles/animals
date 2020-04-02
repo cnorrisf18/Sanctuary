@@ -1,5 +1,5 @@
 species,size,feed,inspiration,victory points, imgstr
-cow,large,10,6,10, cow.jpg
+cow,large,10,6,10, images/cow.jpg
 horse,large,9,6,9, images/horse.JPG
 pig,large,8,5,8, images/pig.JPG
 goat,medium,7,5,7, images/goat.jpg

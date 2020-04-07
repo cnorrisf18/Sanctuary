@@ -1,11 +1,11 @@
 species,size,feed,inspiration,victory points, imgstr
-cow,large,10,6,10, images/cow.jpg
-horse,large,9,6,9, images/horse.JPG
-pig,large,8,5,8, images/pig.JPG
-goat,medium,7,5,7, images/goat.jpg
-sheep,medium,6,4,6, images/sheep.jpg
-dog,medium,5,5,5, images/dog.jpg
-cat,medium,4,3,4, images/cat.JPG
-chicken,small,3,2,3, images/chicken.jpg
-duck,small,2,1,2, images/duck.jpg
-rabbit,small,1,1,1, images/rabbit.jpg
+cow,large,10,6,10,images/cow.jpg
+horse,large,9,6,9,images/horse.JPG
+pig,large,8,5,8,images/pig.JPG
+goat,medium,7,5,7,images/goat.jpg
+sheep,medium,6,4,6,images/sheep.jpg
+dog,medium,5,5,5,images/dog.jpg
+cat,medium,4,3,4,images/cat.JPG
+chicken,small,3,2,3,images/chicken.jpg
+duck,small,2,1,2,images/duck.jpg
+rabbit,small,1,1,1,images/rabbit.jpg

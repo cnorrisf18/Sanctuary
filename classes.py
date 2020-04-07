@@ -13,7 +13,7 @@ from random import randint
 from kivy.config import Config
 from kivy.uix.screenmanager import Screen
 from kivy.uix.boxlayout import BoxLayout
-
+from kivy.uix.image import Image
 import random
 
 Config.set('graphics', 'resizable', 1)
@@ -21,37 +21,38 @@ Config.set('graphics', 'resizable', 1)
 
 class GraphicsDrawer(Widget):
     # this will be used to draw everything
-    def __init__(self, imageStr = "None",**kwargs):
+    def __init__(self, imageStr = "None", name = None, **kwargs):
         super().__init__(**kwargs)
+        #imageStr = 'images/farm.jpg'
+        self.imageStr = imageStr
+        self.name = name
         print(f'imageStr for GRAPHICSDRAWER is {imageStr}')
         with self.canvas:
             # if imageStr == 'images/farm.jpg':
             #     self.rect_bg = Button(background_normal = imageStr)
             #     self.rect_bg.bind(on_release = self.callback)
             # else:
-            self.rect_bg = Rectangle(source=imageStr)
+            print(self.imageStr)
+            self.rect_bg = Rectangle(source = self.imageStr, pos = self.pos, size = self.size)
+            #self.rect_bg = Button(background_normal = self.imageStr, pos = self.pos, size=self.size, on_press = self.callback)
             self.rect_bg.pos = self.pos
             if imageStr == 'images/farm.jpg':
-                self.bind(pos=self.update_graphics_pos_board, size = self.update_graphics_size_board)
+                self.bind(pos=self.update_graphics_pos, size = self.update_graphics_size_board)
             else:
                 self.bind(pos=self.update_graphics_pos, size = self.update_graphics_size)
 
     def callback(self, event):
-        print('hi')
+        self.text = self.name
 
-    def update_graphics_pos_board(self, root, value):
-        #xpos, ypos = 1000,1000
-        self.rect_bg.pos = self.pos
-        #print(f'updating pos {self.rect_bg.pos}')
     def update_graphics_size_board(self, root, value):
         width, height = root.width/3, root.height/3
         #print(f'updating size{width, height}')
         self.rect_bg.size = (width,height)
 
-
     def update_graphics_pos(self, root, value):
-        self.rect_bg.pos = value
-
+        print(self.pos)
+        self.rect_bg.pos = self.pos
+        print(self.rect_bg.pos)
     def update_graphics_size(self, root, value):
         self.rect_bg.size = value
 
@@ -158,7 +159,7 @@ class Animal(GraphicsDrawer):
         self.imageStr = 'None'
         self.vp = 0
         self.calculate_stats()
-        super().__init__(self.imageStr, **kwargs)
+        super().__init__(self.imageStr, self.aname, **kwargs)
     def __str__(self):
         return self.aname
 
@@ -221,12 +222,12 @@ class Players(GraphicsDrawer):
         self.players = int(playernum)
         self.playernames = playernames
         self.inspiration = 0
-        self.total_money = 0
+        self.total_money = self.players * 10
         self.volunteers = 0
         self.new_employees = 0
         self.employees = 0
         self.supporters = 0
-        self.feed = 0
+        self.feed = self.players * 10
         self.overworked = 0
         self.total_sanctuary_animals = []
         self.boardlist = boardlist
@@ -236,7 +237,7 @@ class Players(GraphicsDrawer):
     def calculate_labor_for_actions(self):
         return self.players*2 + self.volunteers//5 + self.emplyees//2
 
-    def hire_employees(self, numactions):
+    def hire_employees(self, numactions, *largs):
         self.new_employees += int(numactions)
         print (f'Hired {numactions} employee(s)')
     def change_new_to_ready_employees(self):
@@ -253,7 +254,7 @@ class Players(GraphicsDrawer):
                 pos += 1
         else:
             print(f'failed to work, len(animallist) is {len(animallist)} while self.players is {self.players}')
-    def recruit_volunteers(self, numactions):
+    def recruit_volunteers(self, numactions, *largs):
         total_recruits = 0
         for n in range(1, int(numactions) + 1):
             roll = random.randint(1, 20)  # might replace this with a cool dice rolling graphic later
@@ -329,7 +330,7 @@ class Players(GraphicsDrawer):
     def earn_money(self, money):
         self.total_money = self.total_money + money
         print(f'Earned ${money}')
-    def public_outreach(self):
+    def public_outreach(self, *largs):
         d20 = random.randint(1,20)
         self.supporters += d20
         print(f'Gained {d20} supporters')

@@ -12,6 +12,7 @@ from kivy.graphics import Rectangle
 from random import randint
 from kivy.config import Config
 from kivy.uix.screenmanager import Screen
+from kivy.uix.behaviors import ButtonBehavior
 from kivy.uix.boxlayout import BoxLayout
 from kivy.uix.image import Image
 import random
@@ -19,6 +20,23 @@ import random
 Config.set('graphics', 'resizable', 1)
 
 
+class CustomButton(ButtonBehavior, Image):
+    def __init__(self, imageStr, name, **kwargs):
+        super(CustomButton, self).__init__(**kwargs)
+        self.source = imageStr
+        self.name = name
+        self.imageStr = imageStr
+        self.text = 'hi'
+    def on_press(self):
+        if self.imageStr == 'images/farm.jpg':
+            self.source = 'images/farmpressed.jpg'
+        else:
+            self.source = self.imageStr
+            self.text = self.name
+
+    def on_release(self):
+        self.source = self.imageStr
+        self.text = ''
 class GraphicsDrawer(Widget):
     # this will be used to draw everything
     def __init__(self, imageStr = "None", name = None, **kwargs):
@@ -26,23 +44,37 @@ class GraphicsDrawer(Widget):
         #imageStr = 'images/farm.jpg'
         self.imageStr = imageStr
         self.name = name
-        print(f'imageStr for GRAPHICSDRAWER is {imageStr}')
+        #print(f'imageStr for GRAPHICSDRAWER is {imageStr}')
         with self.canvas:
-            # if imageStr == 'images/farm.jpg':
-            #     self.rect_bg = Button(background_normal = imageStr)
-            #     self.rect_bg.bind(on_release = self.callback)
-            # else:
-            print(self.imageStr)
-            self.rect_bg = Rectangle(source = self.imageStr, pos = self.pos, size = self.size)
+             #if imageStr == 'images/farm.jpg':
+             #background_normal = imageStr
+            self.rect_bg = CustomButton(self.imageStr, self.name, pos = self.pos, size = self.size)
+            #self.image = Image(source = imageStr, allow_stretch = True, pos = self.rect_bg.pos)
+            #self.rect_bg.add_widget(self.image)
+
+            #self.rect_bg.bind(on_release = self.callback)
+            #else:
+            #print(self.imageStr)
+            #self.rect_bg = Rectangle(source = self.imageStr, pos = self.pos, size = self.size)
             #self.rect_bg = Button(background_normal = self.imageStr, pos = self.pos, size=self.size, on_press = self.callback)
+
             self.rect_bg.pos = self.pos
+            self.add_widget(self.rect_bg)
             if imageStr == 'images/farm.jpg':
                 self.bind(pos=self.update_graphics_pos, size = self.update_graphics_size_board)
+                #self.rect_bg.background_down = 'images/farmpressed.jpg'
+                #self.rect_bg.bind(on_press=lambda x: self.rect_bg.setattr('source','images/farmpressed'))
+                #self.rect_bg.bind(on_release =lambda x: self.rect_bg.setattr('source',self.imageStr))
+                #self.image.bind(pos=self.update_graphics_pos, size = self.update_graphics_size_board)
             else:
                 self.bind(pos=self.update_graphics_pos, size = self.update_graphics_size)
+                #self.rect_bg.background_down = self.name
+                #self.image.bind(pos=self.update_graphics_pos, size = self.update_graphics_size)
 
     def callback(self, event):
-        self.text = self.name
+        print('button pressed')
+    #def board_callback(self, event):
+
 
     def update_graphics_size_board(self, root, value):
         width, height = root.width/3, root.height/3
@@ -50,9 +82,10 @@ class GraphicsDrawer(Widget):
         self.rect_bg.size = (width,height)
 
     def update_graphics_pos(self, root, value):
-        print(self.pos)
+
         self.rect_bg.pos = self.pos
-        print(self.rect_bg.pos)
+
+        #print(self.rect_bg.pos)
     def update_graphics_size(self, root, value):
         self.rect_bg.size = value
 
@@ -224,6 +257,7 @@ class Players(GraphicsDrawer):
         self.inspiration = 0
         self.total_money = self.players * 10
         self.volunteers = 0
+        self.new_volunteers = 0
         self.new_employees = 0
         self.employees = 0
         self.supporters = 0
@@ -244,6 +278,9 @@ class Players(GraphicsDrawer):
         self.employees += self.new_employees
         print(f'{self.new_employees} new employee(s) are ready to work next round! That means you will have to start paying them!')
         self.new_employees = 0
+    def change_new_to_ready_volunteers(self):
+        self.volunteers += self.new_volunteers
+        self.new_volunteers = 0
     def add_starting_animals(self, animallist):
         pos = 0
         if len(animallist) == self.players:

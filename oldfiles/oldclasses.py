@@ -1,13 +1,20 @@
 import kivy
 from kivy.uix.floatlayout import FloatLayout
 kivy.require('1.11.1')
+from kivy.app import App
 from kivy.uix.widget import Widget
 from kivy.uix.label import Label
+from kivy.uix.button import Button
 from kivy.core.window import Window
+from kivy.properties import NumericProperty
+from kivy.clock import Clock
+from kivy.graphics import Rectangle
+from random import randint
 from kivy.config import Config
 from kivy.graphics import Color, Rectangle
 from kivy.uix.screenmanager import Screen
 from kivy.uix.behaviors import ButtonBehavior
+from kivy.uix.boxlayout import BoxLayout
 from kivy.uix.image import Image
 import random
 
@@ -19,6 +26,12 @@ class MyLabel(Label):
         self.r = r
         self.g = g
         self.b = b
+        #self.text_size = self.size
+        #self.size = self.texture_size
+        #self.halign = 'left'
+        #self.size_hint = (None, None)
+        #self.bind(texture_size=self.setter('size'))
+        #self.valign = 'middle'
         super().__init__(**kwargs)
 
     def on_size(self, *args):
@@ -26,11 +39,7 @@ class MyLabel(Label):
         with self.canvas.before:
             Color(self.r, self.g, self.b)
             Rectangle(pos=self.pos, size=self.size)
-    def on_pos(self, *args):
-        self.canvas.before.clear()
-        with self.canvas.before:
-            Color(self.r, self.g, self.b)
-            Rectangle(pos=self.pos, size=self.size)
+
 class CustomButton(ButtonBehavior, Image):
     def __init__(self, imageStr, name, **kwargs):
         super(CustomButton, self).__init__(**kwargs)
@@ -48,40 +57,78 @@ class CustomButton(ButtonBehavior, Image):
     def on_release(self):
         self.source = self.imageStr
         self.text = ''
-
+# class CustomButton(Button):
+#     def __init__(self, imageStr, name, **kwargs):
+#         #super(CustomButton, self).__init__(**kwargs)
+#         super().__init__(**kwargs)
+#         self.source = imageStr
+#         self.name = name
+#         self.text = 'hi'
+#         with self.canvas:
+#             self.i = Image(source = self.source, pos = self.pos, size = self.size)
+#             self.l = Label(text = self.text, pos = self.pos, size = self.size)
+#         self.imageStr = imageStr
+#
+#     def on_size(self, *args):
+#         with self.canvas:
+#        #     Label(text = self.text, pos = self.pos, size = self.size)
+#             #Image(source = self.source)
+#     def on_press(self):
+#         if self.imageStr == 'images/farm.jpg':
+#             self.i.source = 'images/farmpressed.jpg'
+#         else:
+#             self.i.source = self.imageStr
+#             self.l.text = self.name
+#
+#     def on_release(self):
+#         self.i.source = self.imageStr
+#         self.l.text = ''
 class GraphicsDrawer(Widget):
     # this will be used to draw everything
     def __init__(self, imageStr = "None", name = None, **kwargs):
         super().__init__(**kwargs)
-
+        #imageStr = 'images/farm.jpg'
         self.imageStr = imageStr
         self.name = name
-
+        #print(f'imageStr for GRAPHICSDRAWER is {imageStr}')
         with self.canvas:
-
+             #if imageStr == 'images/farm.jpg':
+             #background_normal = imageStr
             self.rect_bg = CustomButton(self.imageStr, self.name, pos = self.pos, size = self.size)
+            #self.image = Image(source = imageStr, allow_stretch = True, pos = self.rect_bg.pos)
+            #self.rect_bg.add_widget(self.image)
 
+            #self.rect_bg.bind(on_release = self.callback)
+            #else:
+            #print(self.imageStr)
+            #self.rect_bg = Rectangle(source = self.imageStr, pos = self.pos, size = self.size)
+            #self.rect_bg = Button(background_normal = self.imageStr, pos = self.pos, size=self.size, on_press = self.callback)
 
             self.rect_bg.pos = self.pos
             self.add_widget(self.rect_bg)
             if imageStr == 'images/farm.jpg':
                 self.bind(pos=self.update_graphics_pos, size = self.update_graphics_size_board)
-
+                #self.rect_bg.background_down = 'images/farmpressed.jpg'
+                #self.rect_bg.bind(on_press=lambda x: self.rect_bg.setattr('source','images/farmpressed'))
+                #self.rect_bg.bind(on_release =lambda x: self.rect_bg.setattr('source',self.imageStr))
+                #self.image.bind(pos=self.update_graphics_pos, size = self.update_graphics_size_board)
             else:
                 self.bind(pos=self.update_graphics_pos, size = self.update_graphics_size)
+                #self.rect_bg.background_down = self.name
+                #self.image.bind(pos=self.update_graphics_pos, size = self.update_graphics_size)
 
     def callback(self, event):
         print('button pressed')
-
+    #def board_callback(self, event):
 
 
     def update_graphics_size_board(self, root, value):
         width, height = root.width/3, root.height/3
-
+        #print(f'updating size{width, height}')
         self.rect_bg.size = (width,height)
     def update_graphics_pos(self, root, value):
         self.rect_bg.pos = self.pos
-
+        #print(self.rect_bg.pos)
     def update_graphics_size(self, root, value):
         self.rect_bg.size = value
 
@@ -115,7 +162,7 @@ class Board(GraphicsDrawer):
 
 
     def add_animals(self, animals):
-
+        #print(animals)
         # animals should be a list of objects of the Animals class
         starting_total = self.total_animals
         for animal in animals:
@@ -130,14 +177,14 @@ class Board(GraphicsDrawer):
                 self.medium_animals += 1
             else:
                 self.small_animals += 1
-
+            #print(animal.asize)
             starting_total = starting_total + 1
             self.total_animals += 1
-
+            #print(self.total_animals)
             if self.total_animals > self.max_animals:
                 self.total_animals = starting_total
                 break
-
+                #raise ValueError('Could not perform operation; You are putting too many animals in one plot!')
 
             self.ambassadors.append(animal)
             self.add_widget(animal)
@@ -155,31 +202,42 @@ class Board(GraphicsDrawer):
                 board_number = self.gui.boardlist.index(board)
         for a in self.ambassadors:
             if a == animal:
-                #print(f'found {animal.asize} animal!')
+                print(f'found {animal.asize} animal!')
                 p = self.ambassadors.index(a)
-                #print(f'pos for animal: {p}')
+                print(f'pos for animal: {p}')
 
                 if animal.asize == 'small':
                     animal.setSize(30,30)
-                    #print(animal.size)
-
+                    print(animal.size)
+                    # print(self.center_x)
+                    # print(self.center_y)
+                    # animal.setPos(p * self.center_x, p * self.center_y)
+                    # print(animal.pos)
+                    # #animal.pos = self.rect_bg.pos
                 elif animal.asize == 'medium':
 
                     animal.setSize(50,50)
-                    #print(animal.size)
-
+                    print(animal.size)
+                    # animal.setPos(p * self.center_x, p * self.center_y)
+                    # print(animal.pos)
                 else:
                     animal.setSize(70,70)
-                    #print(animal.size)
-
+                    print(animal.size)
+                    # animal.setPos(p * self.center_x, p * self.center_y)
+                    # print(animal.pos)
+                #print(self.rect_bg.center_x)
+                #print(self.rect_bg.center_y)
+                #print(p)
+                #animal.setPos(p * self.rect_bg.center_x, p * self.rect_bg.center_y)
+                #print(animal.pos)
                 try:
                     animal.setPos(x_pos_list[p % 5] + ((board_number % 2) * 512), y_pos_list[p % 4] - ((board_number // 2 * 280)))
-                    #print(animal.pos)
+                    print(animal.pos)
                 except IndexError:
                     print('index error')
 
     def labor(self, team, game):
-
+        # food supply will be an object from the Feed class; it is a number representing the total amount of food available
         for animal in self.ambassadors:
             if animal.event18:
                 feed = animal.feed + animal.feed / 2
@@ -232,7 +290,8 @@ class Animal(GraphicsDrawer):
                     self.inspiration = int(animal[3])
                     self.vp = int(animal[4])
                     self.imageStr = animal[5]
-
+                # else:
+                #     print(f'not a match, animal[0] is {animal[0]} while self.species.lower() is {self.species.lower()}')
         if self.special:
             self.vp = self.vp * 2
             self.inspiration = self.inspiration * 2
@@ -260,7 +319,6 @@ class Players:
         self.total_money = self.players * 10
         self.volunteers = 0
         self.event_list = [i for i in range(1, 21)]
-        self.rescue_deck = [i for i in range(1,16)]
         self.actions_used_for_event = 0
         self.new_volunteers = 0
         self.newly_earned_money = 0
@@ -278,7 +336,11 @@ class Players:
         self.overworked = 0
         self.total_sanctuary_animals = []
         self.boardlist = boardlist
-
+        #super().__init__('players',**kwargs)
+    def calculate_labor_for_upkeep(self):
+        return self.players*2 + self.volunteers//5 + self.employees
+    def calculate_labor_for_actions(self):
+        return self.players*2 + self.volunteers//5 + self.employees//2
     def check_if_lost(self):
         for animal in self.total_sanctuary_animals:
             if not animal.hasbeenfed:
@@ -420,23 +482,25 @@ class GUI(Screen):
         self.add_one = True
         self.askedforthirdact = [False, False, False, False]
         super().__init__(**kwargs)
-
+        #l = Label(text = 'Sanctuary', pos_hint = )
         self.add_boards()
     def add_boards(self):
         for i in range(1, self.playernum+1):
-
+            #print(f'i for playernum is {i}')
             board = Board(imageStr='images/farm.jpg', root = self.root, gui = self)
             self.boardlist.append(board)
             self.add_widget(board)
             self.set_boards_pos()
-
+            #print(f'Added board for {i} players')
+            '''#bind the boards position to the screen resize event'''
+        #print(f'boardlist for {self.playernum} players: {self.boardlist}')
     def set_boards_pos(self):
         i = 1
         for board in self.boardlist:
             xpos1,ypos1 = 0, Window.height/3
             xpos2 = Window.width /3
             ypos2 = 0
-
+            #print(f'i for boardlist is {i}')
             if i == 1:
                 xpos = xpos1
                 ypos = ypos1
@@ -453,5 +517,5 @@ class GUI(Screen):
                 xpos = xpos1
                 ypos = ypos1
             board.setPos(xpos, ypos)
-
+            #print(f'set pos for boardlist at pos {i}, new pos is {board.pos}')
             i += 1

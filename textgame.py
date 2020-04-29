@@ -1,4 +1,4 @@
-from classes import Players, Animal, Board, Workforce
+from classes import Players, Animal, Board
 import random
 
 
@@ -7,7 +7,9 @@ import random
 
 def Setup():
     num = int(input('How many players?'))
-    team = Players(num, [])
+    boardlist = [Board(None) for n in range(1,num+1)]
+    print(boardlist)
+    team = Players(num, [], None, boardlist)
     for player in range(0,team.players):
         team.earn_money(10)
         name = input(f'Player {player}, what is your name?')
@@ -23,6 +25,8 @@ def Setup():
                 compname = input(f'What would you like to name your {animal}?')
                 added_ani = Animal(aname= compname, species = animal, special = True)
                 added_ani.calculate_stats()
+                print(team.boardlist)
+                print(team.boardlist[player])
                 team.total_sanctuary_animals.append(added_ani)
                 team.boardlist[player].add_animals([added_ani])
                 print(f'Added {compname} the {animal} to the sanctuary!')

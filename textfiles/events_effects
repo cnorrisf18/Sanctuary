@@ -1,0 +1,21 @@
+id, effect1, effect2
+1, Costs 2 labor and 5 feed, Flip a coin for each board: if tails the animal that offers the highest inspiration dies
+2, Gain 10 inspiration and lose 5 supporters, lose 10 inspiration and remove the animal from the sanctuary
+3, Gain 20 inspiration and pay $30, lose 20 inspiration
+4, Founders cannot take any actions this turn, Caregivers become overworked even if they do not take a third action this round and lose an extra 10 inspiration if they do take a third action
+5, no volunteers this round, no effect 2
+6, no employee actions this round, no effect 2
+7, Costs 1 labor; lose 10 inspiration and pay $10, lose 10 supporters and 5 volunteers
+8, Lose all donations from supporters this turn, Costs 2 labor
+9, Gain either 10 supporters or 10 volunteers; Costs 1 labor and $10, Lose 5 inspiration
+10, get 2x donations, no effect 2
+11, costs 1 labor and $50 but gain 20 inspiration, flip a coin - if tails animal dies; lose 10 supporters
+12, The board the animal is on costs 2 labor this turn instead of 1; costs $10, Lose 5 supporters and 5 inspiration
+13, gain 5 supporters and 5 inspiration, gain 5 volunteers and 5 inspiration
+14, founders don't get overworked from taking a third action this round, no effect 2
+15, Each board costs an extra labor this round, Pay 10 feed
+16, pay $20 and costs 2 labor, lose 10 inspiration and 5 supporters.
+17, pay $20 and costs 2 labor, lose 10 inspiration and 5 supporters.
+18, Animals need 1.5 times the amount of food this round, Costs $10 and players are automatically Overworked this round
+19, Costs 1 labor per board and $10, Flip a coin for each board; if tails the animal that offers the most inspiration dies
+20, Pay $5/board, Lose 20 inspiration from the repo man turning off your water
